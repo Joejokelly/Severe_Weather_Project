@@ -2,23 +2,21 @@
 title: "Severe Weather Impact"
 author: "Joe Okelly"
 date: "2024-12-30"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 1. Synopsis
+## 1. Introductiom
 
-**Objective**: The objective of this analysis is to answer two questions about severe weather events:
+Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.
 
-- Across the United States, which types of events (as indicated in the `EVTYPE` variable) are most harmful with respect to population health? 
-- Across the United States, which types of events have the greatest economic consequences?
+This project involves exploring the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
 
-**Analysis**: This analysis uses a subset of the National Oceanic and Atmospheric Administration's (NOAA) Storm Database, limited to events in the US from 1996-2011. Impacts on human health are measured as the total fatalities and injuries as a result of severe weather, and economic consequences as the total costs of property and crop damage.
-
-**Results**: Results show that from 1996-2011 excessive heat accounts for the greatest number of fatalies, tornados for injuries, and floods for economic costs.
 
 ## 2. Data Processing
 

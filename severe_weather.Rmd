@@ -2,16 +2,14 @@
 title: "Severe Weather Impact"
 author: "Joe Okelly"
 date: "2024-12-30"
-output:
-  html_document: default
-  pdf_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 1. Introductiom
+## 1. Introduction
 
 Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.
 
@@ -20,7 +18,10 @@ This project involves exploring the U.S. National Oceanic and Atmospheric Admini
 
 ## 2. Data Processing
 
-The data for this assignment come in the form of a comma-separated-value file compressed via the bzip2 algorithm to reduce its size. The data and documentation are available from the course web site:
+
+The data for this analysis is sourced from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database. The dataset, provided in a compressed CSV file format, includes records of major storms and severe weather events in the United States. For this project, we focus on identifying patterns in population health impacts (fatalities and injuries) and economic impacts (property and crop damage).
+
+The dataset spans from 1950 to November 2011. However, early records (1950-1995) predominantly document tornadoes, thunderstorm winds, and hail, with more comprehensive data available starting in January 1996. To ensure a balanced and unbiased analysis, we limit our study to events from 1996 onward. The following subsections detail the preprocessing steps applied to the data.
 
 - [Storm Data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2) [47Mb]
 - National Weather Service [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
@@ -88,7 +89,15 @@ noaa.subset <- select(noaa,
 
 ### 2.3. Recoding Severe Weather Types
 
-The dataset contains over 400 unique values for severe weather types, which must be recoded into the 48 permitted storm event types listed on [page 6, Table 2.1.1 "Storm Data Event Table"](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf).
+The EVTYPE variable contains over 400 unique weather event types, many of which are inconsistent or redundant. To address this, we recoded the event types to align with the 48 standardized storm event categories specified in the NOAA Storm Data Documentation (Table 2.1.1). This process involved:
+
+Identifying allowed event types: These include categories such as "Flood," "Hurricane (Typhoon)," and "Winter Storm."
+
+Splitting the dataset: Separating records into those that match the allowed event types and those requiring recoding.
+
+Recoding based on patterns: Using regular expressions to map similar or misspelled event types to their corresponding allowed categories (e.g., "HURRIC" mapped to "Hurricane (Typhoon)").
+
+Merging datasets: Reintegrating the recoded and already-matching records into a single dataset for subsequent analysis.
 
 ```{r}
 # Permittted storm events as listed in data documentation
@@ -152,7 +161,25 @@ noaa.subset <- rbind(noaa.subset.event.allowed, noaa.subset.event.recode)
 
 ### 2.4. Calculating Total Economic Costs
 
-Total economic costs are calculated by multiplying `PROPDMG` and `PROPDMGEXP`, and `CROPDMG` and `CROPDMGEXP`, respectively. The variables `PROPDMGEXP` and `CROPDMGEXP` are coded as: “B” for billions, “M” for millions, and “K” for thousands. The numbers 1 to 10 represent the power of ten (eg. 10^number).
+Economic impacts are assessed by combining property and crop damages. The PROPDMGEXP and CROPDMGEXP variables indicate the magnitude of damage, coded as:
+
+K: Thousands (1,000)
+
+M: Millions (1,000,000)
+
+B: Billions (1,000,000,000)
+
+Numeric values (1-10): Power of ten (e.g., 3 = 10^3 = 1,000)
+
+To calculate total damages:
+
+The base damage values (PROPDMG and CROPDMG) were multiplied by their respective multipliers (PROPDMGEXP and CROPDMGEXP).
+
+Any undefined or unrecognized multipliers were defaulted to the base damage values, assuming no multiplier.
+
+The results were stored as new variables: PROPDMG.TOTAL and CROPDMG.TOTAL, representing the total property and crop damage in monetary terms.
+
+These calculations allow us to quantify the economic toll of severe weather events and identify the most financially impactful event types.
 
 ```{r warning=FALSE}
 # Calculate economic costs as total dollars
